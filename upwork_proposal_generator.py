@@ -15,25 +15,38 @@ genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
 # Set up the model
 model = genai.GenerativeModel('gemini-2.0-flash')
 
-def generate_proposal(job_description, skills, experience, portfolio_links):
+def generate_proposal(job_description, skills):
     prompt = f"""
-    Create a professional Upwork proposal based on the following information:
+    Create a professional Upwork proposal with exactly this structure and format:
+
+    Title: "Proposal: [Brief Project Description]"
+
+    [Opening paragraph explaining the understanding of the project and proposed solution without any bullet points]
+
+    Relevant Experience
+    [A paragraph describing relevant technical achievements and project completions without mentioning years of experience or using bullet points. Focus on completed projects and their impacts.]
+
+    Technical Implementation
+    [A detailed paragraph explaining the technical approach and methodology. Include specific technologies and how they will work together. No bullet points or subheadings.]
+
+    Delivery Plan
+    Phase 1: [Single line describing initial phase]
+    Phase 2: [Single line describing development phase]
+    Phase 3: [Single line describing final phase]
+
+    [Closing paragraph with a brief call to action for discussion]
+
+    Use this information:
     Job Description: {job_description}
+    Technical Skills to Consider: {skills}
     
-    My Skills: {skills}
-    
-    My Experience: {experience}
-    
-    Portfolio Links: {portfolio_links}
-    
-    Generate a compelling, personalized proposal that:
-    1. Starts with a strong hook
-    2. Addresses the client's specific needs
-    3. Highlights relevant skills and experience
-    4. Includes a clear value proposition
-    5. Ends with a strong call to action
-    6. Maintains a professional yet friendly tone
-    7. Is between 200-300 words
+    Important guidelines:
+    - Keep the tone professional and confident
+    - Focus on solutions and implementation details
+    - Don't mention personal experience
+    - Be specific and technical in the implementation section
+    - Structure the content with clear headings
+    - Ensure the proposal demonstrates deep understanding of the requirements
     """
     
     response = model.generate_content(prompt)
@@ -76,13 +89,14 @@ def main():
     
     st.title("🚀 Professional Upwork Proposal Generator")
     st.markdown("""
-    ### Generate High-Quality Upwork Proposals
+    ### Professional Upwork Proposal Generator
     
-    **How to use:**
-    1. Paste the job posting details in the left column
-    2. Add your professional information in the right column
-    3. Click 'Generate Proposal' to create your customized proposal
-    4. Download the proposal as a PDF
+    This tool will generate a structured proposal with:
+    - Project understanding and solution overview
+    - Relevant technical experience section
+    - Detailed technical implementation
+    - Three-phase delivery plan
+    - Professional call to action
     
     *All fields marked with * are required*
     """)
@@ -94,38 +108,20 @@ def main():
         st.subheader("Project Details")
         job_description = st.text_area(
             "Job Description *",
-            placeholder="Paste the complete job description from Upwork here...\n\nExample:\nLooking for a Python developer to build...",
-            height=200
-        )
-        
-        client_info = st.text_area(
-            "Client Information (Optional)",
-            placeholder="Add any specific details about the client or project requirements...\n\nExample:\n- Client's industry\n- Project budget\n- Timeline requirements\n- Previous work history",
-            height=100
+            placeholder="Paste the complete job description from Upwork here...\n\nMake sure to include:\n- Project requirements\n- Technical specifications\n- Timeline expectations\n- Budget information\n- Any specific deliverables",
+            height=300
         )
     
     with col2:
-        st.subheader("Your Information")
+        st.subheader("Technical Skills")
         skills = st.text_area(
-            "Your Key Skills *",
-            placeholder="List your relevant skills that match the job requirements...\n\nExample:\n- Python Development\n- Database Design\n- API Integration\n- Cloud Architecture",
-            height=100
-        )
-        
-        experience = st.text_area(
-            "Relevant Experience *",
-            placeholder="Describe your relevant experience for this specific job...\n\nExample:\n- Successfully delivered 3 similar projects\n- 5 years of experience in...\n- Specific achievements and metrics",
-            height=100
-        )
-        
-        portfolio_links = st.text_area(
-            "Portfolio Links",
-            placeholder="Add links to relevant work samples, GitHub repositories, or previous projects...\n\nExample:\n- https://github.com/yourusername/project\n- https://yourportfolio.com/project1",
-            height=100
+            "Relevant Technical Skills & Tools *",
+            placeholder="List the technical skills, tools, and technologies relevant to this project...\n\nExample:\n- Frontend: React, Vue.js\n- Backend: Node.js, Python\n- Database: MySQL, MongoDB\n- Tools: Docker, AWS\n- Frameworks: FastAPI, Express",
+            height=300
         )
     
     if st.button("Generate Proposal"):
-        if not job_description or not skills or not experience:
+        if not job_description or not skills:
             st.error("Please fill in all required fields!")
             return
         
@@ -133,9 +129,7 @@ def main():
             try:
                 proposal = generate_proposal(
                     job_description,
-                    skills,
-                    experience,
-                    portfolio_links
+                    skills
                 )
                 
                 st.success("Proposal generated successfully!")
@@ -145,7 +139,7 @@ def main():
                 st.write(proposal)
                 
                 # Create and offer PDF download
-                pdf_path = create_pdf(proposal, client_info)
+                pdf_path = create_pdf(proposal, "")
                 
                 with open(pdf_path, "rb") as f:
                     pdf_bytes = f.read()
