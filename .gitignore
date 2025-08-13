@@ -1,0 +1,38 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Environment variables
+.env
+
+# Streamlit specific
+.streamlit/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System specific files
+.DS_Store
+Thumbs.db
+
+# Generated files
+*.pdf
+generated_proposal.pdf
+
+# Logs
+*.log
+.streamlit/config.toml
